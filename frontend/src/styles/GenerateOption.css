@@ -1,0 +1,27 @@
+.generated-options{
+    /* background-color: red; */
+    margin-top: 4px;
+}
+
+.choice{
+    /* background-color: blue;
+    border: 3px solid green; */
+    width: 100%;
+}
+
+.choice input{
+    height: 45px;
+    width: 100%;
+    outline: none;
+    font-size: 16px;
+    border-radius: 5px;
+    padding-left: 15px;
+    border: 1px solid #ccc;
+    border-bottom-width: 2px;
+    transition: all 0.3s ease;
+}
+
+/* .choice input:focus,
+.choice input:valid {
+    border-color: #2ec4b6;
+} */

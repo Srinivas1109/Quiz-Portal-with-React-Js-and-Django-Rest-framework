@@ -1,0 +1,43 @@
+a {
+    text-decoration: none;
+}
+
+li {
+    list-style: none;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: #333;
+}
+
+.topnav a {
+    float: left;
+    color: #f2f2f2;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+    font-size: 17px;
+}
+
+.header-username{
+    background-color: #44e3d8;
+    color: #ffffff;
+    padding: 14px 16px;
+    font-size: 17px;
+}
+
+.topnav a:hover {
+    background-color: #cbf3f0;
+    color: black;
+}
+
+.topnav a.active {
+    background-color: #44e3d8;
+    color: white;
+}
+
+.creds{
+    position: absolute;
+    right: 0;
+}

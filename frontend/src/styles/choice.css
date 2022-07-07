@@ -1,0 +1,20 @@
+*:focus {
+    outline: 0 !important;
+}
+
+.option:hover{
+    background: #c3edf4 !important;
+    cursor: pointer;
+    transition: 1s;
+    /* font-style: bold; */
+}
+
+.option{
+    font-family: 'Source Sans Pro', 'sans-serif';
+    font-size: medium;
+    font-weight: 600;
+}
+
+.active-option{
+    background-color: #19c1df;
+}

@@ -1,0 +1,27 @@
+*:focus {
+    outline: 0 !important;
+}
+
+.quiz-item{
+    box-shadow: 10px 5px 5px #6c757d;
+    cursor: pointer;
+    border: none;
+}
+
+.quiz-item:hover{
+    background-color: #cbf3f0;
+    transition: .5s;
+}
+
+.quizzes-flex{
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.quiz-items-list{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content:flex-start;
+    /* background-color: red; */
+}
