@@ -61,6 +61,13 @@ a:hover{
 
 .edit-quiz{
     background-color: rgb(75, 146, 247);
+    margin-bottom: 15px;
+    width: calc(100% / 1 - 20px);
+    padding: 12px;
+    color: white;
+    font-weight: 600;
+    text-align: center;
+    border: none;
 }
 
 .edit-quiz:hover{

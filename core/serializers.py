@@ -1,3 +1,4 @@
+from dataclasses import fields
 from rest_framework.serializers import ModelSerializer
 from .models import Quiz, Question, Choice, Profile
 from django.contrib.auth.models import User
@@ -13,12 +14,10 @@ class QuestionSerializer(ModelSerializer):
         model = Question
         fields = '__all__'
 
-
 class ChoiceSerializer(ModelSerializer):
     class Meta:
         model = Choice
         fields = '__all__'
-
 
 class UserSerializer(ModelSerializer):
     class Meta:
@@ -31,6 +30,6 @@ class ProfileSerializer(ModelSerializer):
     class Meta:
         model = Profile
         fields = ['id', 'mobileNo', 'address']
-        
+
 
 

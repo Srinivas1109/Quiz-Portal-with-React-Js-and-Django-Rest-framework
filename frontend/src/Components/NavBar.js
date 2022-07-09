@@ -14,8 +14,8 @@ const NavBar = () => {
   return (
     <div>
       <div className="topnav">
-        <Link className="active" to="/">Home</Link>
-        {user ? <Link to="/all">Quizzes</Link> : null}
+        <Link className="" to="/">Home</Link>
+        {user ? <Link to="/quizzes">Quizzes</Link> : null}
         {user && user.isStaff ? <Link to="/staff">Staff</Link> : null}
         <Link to="/contact">Contact</Link>
         <Link to="/about">About</Link>

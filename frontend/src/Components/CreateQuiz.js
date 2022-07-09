@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, Link } from 'react-router-dom'
 import TextEditor from './TextEditor'
 import "../styles/createQuiz.css"
 import GenerateOption from './GenerateOption'
+import parse from 'html-react-parser'
 
 const CreateQuiz = () => {
 
     const location = useLocation()
     const { quizName } = location.state
 
-    // const [createdQuestions, setCreatedQuestions] = useState([])
+    const [createdQuestions, setCreatedQuestions] = useState([])
     const [optionType, setOptionType] = useState(null)
     const [generatedOptions, setGeneratedOptions] = useState([]) // for upload file
     // const [generatedOptionsText, setGeneratedOptionsText] = useState([]) // for database
@@ -18,16 +19,98 @@ const CreateQuiz = () => {
     const [explanationText, setExplanationText] = useState('None')
     const [textBox, setTextBox] = useState(null)
     const [answer, setAnswer] = useState([])
+    const [quizId, setQuizId] = useState(null)
+    const [quizScheduleTime, setQuizScheduleTime] = useState(location.state.quizScheduleTime)
+    const [scheduled, setScheduled] = useState(location.state.scheduled)
 
+
+    const clearRef = useRef()
     // setCreatedQuestions((prev) => (
     //    [ ...prev, ''] 
     // ))
     // console.log(questionText)
 
+    useEffect(() => {
+        init()
+
+    }, [quizId])
+
+    const setData = async () => {
+        if (quizId !== null) {
+            const data = await fetch(`http://127.0.0.1:8000/api/quizzes/${quizId}/questions/`)
+            const questions = await data.json()
+            // console.log("createQUiz.js: ", questions)
+            setCreatedQuestions(() => questions)
+        }
+    }
+
+    const init = async () => {
+        console.log("CreateQuiz.js: Init executed")
+        setOptionType(() => null)
+        setGeneratedOptions(() => [])
+        setQuestionText(() => null)
+        setExplanationText(() => "None")
+        setTextBox(() => null)
+        setAnswer(() => [])
+        if (quizName) {
+
+            const res = await fetch(`http://127.0.0.1:8000/api/staff/help/`,
+                {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        "quiz_name": quizName
+                    })
+                }
+            )
+            const response = await res.json()
+            console.log("createQuiz.js: ", response)
+            if (response.status === 200) {
+                setQuizId(() => response.quiz_id)
+                if (response.quiz_schedule_time) {
+                    setScheduled(() => true)
+                    setQuizScheduleTime(() => parseDateTime(response.quiz_schedule_time))
+                }
+            }
+
+            if (quizId !== null) {
+                setData()
+            }
+        }
+    }
+    // init()
     const handleOptionType = (e) => {
         // console.log(e.target.value)
         setOptionType(() => e.target.value)
         setGeneratedOptions([])
+    }
+
+    const parseDateTime = (date_time) => {
+        // console.log(date_time)
+        if (date_time !== null) {
+            const date = new Date(date_time)
+            const day = date.getDate()
+            const mon = date.toLocaleString('default', { month: 'long' })
+            const year = date.getFullYear()
+            const time = date.toLocaleString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true })
+            const dateTime = `${mon} ${day} ${year} ${time}`
+            return dateTime.toString()
+        }
+        else return null
+
+    }
+
+    const parseDateTimeDB = (date_time) => {
+        if (date_time !== null) {
+            const dateTime = new Date(date_time)
+            const date = dateTime.getDate()
+            const month = dateTime.getMonth()
+            const year = dateTime.getFullYear()
+            const hour = dateTime.getHours()
+            const minutes = dateTime.getMinutes()
+            return [year, month, date, hour, minutes]
+        }
+        else return null
     }
 
 
@@ -44,11 +127,15 @@ const CreateQuiz = () => {
 
 
     const handleAnswer = (e) => {
-        console.log(e.target.value)
+        // console.log(e.target.value)
         setAnswer(() => parseInt(e.target.value))
     }
 
-    const handleSubmit = (e) => {
+    const clearForm = () => {
+        clearRef.current.click()
+    }
+
+    const handleSubmit = async (e) => {
         e.preventDefault()
 
         const marks = parseInt(e.target.marks.value)
@@ -57,7 +144,7 @@ const CreateQuiz = () => {
         const answers = []
         const correctIndices = []
         let optionNum = 0
-        
+
         if (optionType !== "textBox") {
             optionNum = optionType !== "textBox" ? parseInt(e.target.optionsNumber.value) : 0
             for (let index = 1; index <= parseInt(e.target.optionsNumber.value); index++) {
@@ -76,6 +163,9 @@ const CreateQuiz = () => {
         }
 
         const body = {
+            "quiz_name": quizName,
+            "quiz_scheduled": scheduled ? scheduled : false,
+            "quiz_scheduled_time": parseDateTimeDB(quizScheduleTime),
             "question": questionText,
             "marks": marks,
             "option_type": optionType,
@@ -87,7 +177,35 @@ const CreateQuiz = () => {
             "text_box_answer": optionType === "textBox" ? textBox : null,
         }
 
-        console.log(body)
+        // console.log(body)
+        // const date = new Date(quizScheduleTime)
+        // console.log(date)
+        const res = await fetch('http://127.0.0.1:8000/api/staff/upload/',
+            {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body)
+            }
+        )
+
+        const response = await res.json()
+        console.log("createQuiz.js: ", response)
+        if (response.status === 201) {
+            clearForm()
+            init()
+            setQuizId(response.quiz_id)
+            if (quizId !== null) {
+                const data = await fetch(`http://127.0.0.1:8000/api/quizzes/${quizId}/questions/`,
+                    {
+                        method: "GET",
+                    }
+                )
+                const questions = await data.json()
+                // console.log(await data.json())
+                setCreatedQuestions(() => questions)
+            }
+
+        }
     }
 
     return (
@@ -146,26 +264,26 @@ const CreateQuiz = () => {
                             </div>
 
                             <button type="submit" className="btn btn-info upload">Upload</button>
+                            <button type='reset' style={{ display: 'none' }} ref={clearRef}>Reset</button>
                         </div>
 
 
                         <div className="w-50 mx-3 created-questions">
+
                             <div className="badge badge-primary text-wrap my-2 px-3 py-2 text-monospace quiz-name">
-                                {quizName}
+                                {quizName} {scheduled ? ("Scheduled On " + parseDateTime(quizScheduleTime)) : null}
                             </div>
 
-                            <Link to="/" className="text-decoration-none text-white">
-                                <div className="p-3 mb-2 bg-dark text-white text-monospace question">
-                                    1. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolorem libero fugiat iste soluta corporis. Nisi eum adipisci dignissimos nostrum numquam unde dolore
-                                </div>
-                            </Link>
-                            <Link to="/" className="text-decoration-none text-white">
-                                <div className="p-3 mb-2 bg-dark text-white text-monospace question">
-                                    2. Lorem, ipsum dolor sit amet consectetur adipisicing elit. Dolorem libero fugiat iste soluta corporis. Nisi eum adipisci dignissimos nostrum numquam unde dolore
-                                </div>
-                            </Link>
+                            {createdQuestions.map((question, index) => (
+                                <Link to={`/question/${question.id}/edit/`} className="text-decoration-none text-white" key={index}>
+                                    <div className="p-2 mb-1 bg-dark text-white text-monospace question">
+                                        {/* <p dangerouslySetInnerHTML={{ __html: `${index + 1}. ${question.question}` }} /> */}
+                                        {index+1}. {parse(question.question)}
+                                    </div>
+                                </Link>
+                            ))}
+                            <div><Link className="btn btn-info " to="/preview-all"> Preview All</Link></div>
 
-                            <Link className="btn btn-info " to="/preview-all"> Preview All</Link>
                         </div>
 
                     </div>
@@ -176,4 +294,3 @@ const CreateQuiz = () => {
 }
 
 export default CreateQuiz
-

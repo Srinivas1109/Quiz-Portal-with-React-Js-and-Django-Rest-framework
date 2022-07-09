@@ -20,6 +20,7 @@ import About from './Components/About';
 import Staff from './Components/Staff';
 import StaffPrivateRoute from './Components/StaffPrivateRoute';
 import CreateQuiz from './Components/CreateQuiz';
+import EditQuiz from './Components/EditQuiz';
 
 
 
@@ -34,14 +35,15 @@ function App() {
         <Routes>
 
           <Route element={<PrivateRoute />}>
-            <Route path='/all' element={<Quiz />} />
-            <Route path="/all/:id/questions" element={<Question />} />
+            <Route path='/quizzes' element={<Quiz />} />
+            <Route path="/quizzes/:id/questions" element={<Question />} />
             <Route path="/profile" element={<UserProfile />} />
           </Route>
 
           <Route element={<StaffPrivateRoute />}>
             <Route path='/staff' element={<Staff />} />
             <Route path='/create' element={<CreateQuiz />} />
+            <Route path="/quizzes/:id/edit" element={<EditQuiz />} />
           </Route>
 
           <Route path='/login' element={<Login />} />

@@ -20,7 +20,7 @@ li {
     font-size: 17px;
 }
 
-.header-username{
+.header-username {
     background-color: #44e3d8;
     color: #ffffff;
     padding: 14px 16px;
@@ -32,12 +32,12 @@ li {
     color: black;
 }
 
-.topnav a.active {
+.topnav a:active {
     background-color: #44e3d8;
     color: white;
 }
 
-.creds{
+.creds {
     position: absolute;
     right: 0;
 }

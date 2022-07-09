@@ -1,4 +1,4 @@
-.input-box input {
+.input-box input{
     height: 45px;
     width: 100%;
     outline: none;
@@ -13,4 +13,8 @@
 .input-box input:focus,
 .input-box input:valid {
     border-color: #2ec4b6;
+}
+
+.schedule{
+    margin-top: 8px;
 }

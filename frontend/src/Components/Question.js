@@ -1,394 +1,31 @@
-import React, { useState } from "react"
+import React, { useEffect, useState, useRef } from "react"
 import QuestionItem from "../Components/QuestionItem"
+import { useLocation } from 'react-router-dom'
+import QuickViewModal from "./QuickViewModal"
 
 export default function Question() {
   const [qnum, setQnum] = useState(0)
-  const duplicate = [
-    {
-
-      "id": 34,
-
-      "relatedTo": 26,
-      "question": "In this article, I’d like to reacquaint you with the humble workhorse of communication that is the paragraph. Paragraphs are everywhere. In fact, at the high risk of stating the obvious, you are reading one now. Despite their ubiquity, we frequently neglect their presentation. This is a mistake.",
-      "marks": 4,
-      "isRadio": true,
-      "isTextBox": false,
-      "createdOn": "2022-06-28T17:52:22.137Z",
-      "lastModifiedOn": "2022-06-28T17:52:22.137Z"
-      ,
-      "options": [
-        {
-
-          "id": 124,
-
-          "relatedTo": 34,
-          "choice": "Apis",
-          "createdOn": "2022-06-28T17:52:22.140Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.140Z"
-        }
-        ,
-        {
-
-          "id": 125,
-
-          "relatedTo": 34,
-          "choice": "Coleoptera",
-          "createdOn": "2022-06-28T17:52:22.145Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.145Z"
-        }
-        ,
-        {
-
-          "id": 126,
-
-          "relatedTo": 34,
-          "choice": "Formicidae",
-          "createdOn": "2022-06-28T17:52:22.147Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.147Z"
-        }
-        ,
-        {
-
-          "id": 127,
-
-          "relatedTo": 34,
-          "choice": "Rhopalocera",
-          "createdOn": "2022-06-28T17:52:22.150Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.150Z"
-        }
-
-      ]
-    },
-    {
-
-      "id": 44,
-      "relatedTo": 26,
-      "question": "What is the scientific name of a butterfly?",
-      "marks": 4,
-      "isRadio": true,
-      "isTextBox": false,
-      "createdOn": "2022-06-28T17:52:22.137Z",
-      "lastModifiedOn": "2022-06-28T17:52:22.137Z",
-      "options": [
-        {
-
-          "id": 128,
-
-          "relatedTo": 44,
-          "choice": "Apis",
-          "createdOn": "2022-06-28T17:52:22.140Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.140Z"
-        }
-        ,
-        {
-
-          "id": 129,
-
-          "relatedTo": 44,
-          "choice": "Coleoptera",
-          "createdOn": "2022-06-28T17:52:22.145Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.145Z"
-        }
-        ,
-        {
-
-          "id": 130,
-
-          "relatedTo": 44,
-          "choice": "Formicidae",
-          "createdOn": "2022-06-28T17:52:22.147Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.147Z"
-        }
-        ,
-        {
-
-          "id": 131,
-
-          "relatedTo": 44,
-          "choice": "Rhopalocera",
-          "createdOn": "2022-06-28T17:52:22.150Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.150Z"
-        }
-
-      ]
-    },
-    {
-
-      "id": 3,
-
-      "relatedTo": 26,
-      "question": "What is the scientific name of a butterfly?",
-      "marks": 4,
-      "isRadio": true,
-      "isTextBox": false,
-      "createdOn": "2022-06-28T17:52:22.137Z",
-      "lastModifiedOn": "2022-06-28T17:52:22.137Z",
-      "options": [
-        {
-
-          "id": 132,
-
-          "relatedTo": 3,
-          "choice": "Apis",
-          "createdOn": "2022-06-28T17:52:22.140Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.140Z"
-        }
-        ,
-        {
-
-          "id": 133,
-
-          "relatedTo": 3,
-          "choice": "Coleoptera",
-          "createdOn": "2022-06-28T17:52:22.145Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.145Z"
-        }
-        ,
-        {
-
-          "id": 134,
-
-          "relatedTo": 3,
-          "choice": "Formicidae",
-          "createdOn": "2022-06-28T17:52:22.147Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.147Z"
-        }
-        ,
-        {
-
-          "id": 135,
-
-          "relatedTo": 3,
-          "choice": "Rhopalocera",
-          "createdOn": "2022-06-28T17:52:22.150Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.150Z"
-        }
-
-      ]
-    },
-    {
-
-      "id": 40,
-
-      "relatedTo": 26,
-      "question": "What is the scientific name of a butterfly?",
-      "marks": 4,
-      "isRadio": true,
-      "isTextBox": false,
-      "createdOn": "2022-06-28T17:52:22.137Z",
-      "lastModifiedOn": "2022-06-28T17:52:22.137Z"
-      ,
-      "options": [
-        {
-
-          "id": 136,
-
-          "relatedTo": 40,
-          "choice": "Apis",
-          "createdOn": "2022-06-28T17:52:22.140Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.140Z"
-        }
-        ,
-        {
-
-          "id": 137,
-
-          "relatedTo": 40,
-          "choice": "Coleoptera",
-          "createdOn": "2022-06-28T17:52:22.145Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.145Z"
-        }
-        ,
-        {
-
-          "id": 138,
-
-          "relatedTo": 40,
-          "choice": "Formicidae",
-          "createdOn": "2022-06-28T17:52:22.147Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.147Z"
-        }
-        ,
-        {
-
-          "id": 139,
-
-          "relatedTo": 40,
-          "choice": "Rhopalocera",
-          "createdOn": "2022-06-28T17:52:22.150Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.150Z"
-        }
-
-      ]
-    },
-    {
-
-      "id": 41,
-
-      "relatedTo": 26,
-      "question": "What is the scientific name of a butterfly?",
-      "marks": 4,
-      "isRadio": true,
-      "isTextBox": false,
-      "createdOn": "2022-06-28T17:52:22.137Z",
-      "lastModifiedOn": "2022-06-28T17:52:22.137Z"
-      ,
-      "options": [
-        {
-
-          "id": 140,
-
-          "relatedTo": 41,
-          "choice": "Apis",
-          "createdOn": "2022-06-28T17:52:22.140Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.140Z"
-        }
-        ,
-        {
-
-          "id": 141,
-
-          "relatedTo": 41,
-          "choice": "Coleoptera",
-          "createdOn": "2022-06-28T17:52:22.145Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.145Z"
-        }
-        ,
-        {
-
-          "id": 142,
-
-          "relatedTo": 41,
-          "choice": "Formicidae",
-          "createdOn": "2022-06-28T17:52:22.147Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.147Z"
-        }
-        ,
-        {
-
-          "id": 143,
-
-          "relatedTo": 41,
-          "choice": "Rhopalocera",
-          "createdOn": "2022-06-28T17:52:22.150Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.150Z"
-        }
-
-      ]
-    },
-    {
-
-      "id": 42,
-
-      "relatedTo": 26,
-      "question": "What is the scientific name of a butterfly?",
-      "marks": 4,
-      "isRadio": true,
-      "isTextBox": false,
-      "createdOn": "2022-06-28T17:52:22.137Z",
-      "lastModifiedOn": "2022-06-28T17:52:22.137Z"
-      ,
-      "options": [
-        {
-
-          "id": 144,
-
-          "relatedTo": 42,
-          "choice": "Apis",
-          "createdOn": "2022-06-28T17:52:22.140Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.140Z"
-        }
-        ,
-        {
-
-          "id": 145,
-
-          "relatedTo": 42,
-          "choice": "Coleoptera",
-          "createdOn": "2022-06-28T17:52:22.145Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.145Z"
-        }
-        ,
-        {
-
-          "id": 146,
-
-          "relatedTo": 42,
-          "choice": "Formicidae",
-          "createdOn": "2022-06-28T17:52:22.147Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.147Z"
-        }
-        ,
-        {
-
-          "id": 147,
-
-          "relatedTo": 42,
-          "choice": "Rhopalocera",
-          "createdOn": "2022-06-28T17:52:22.150Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.150Z"
-        }
-
-      ]
-    },
-    {
-
-      "id": 43,
-
-      "relatedTo": 26,
-      "question": "What is the scientific name of a butterfly?",
-      "marks": 4,
-      "isRadio": true,
-      "isTextBox": false,
-      "createdOn": "2022-06-28T17:52:22.137Z",
-      "lastModifiedOn": "2022-06-28T17:52:22.137Z"
-      ,
-      "options": [
-        {
-
-          "id": 148,
-
-          "relatedTo": 43,
-          "choice": "Apis",
-          "createdOn": "2022-06-28T17:52:22.140Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.140Z"
-        }
-        ,
-        {
-
-          "id": 149,
-
-          "relatedTo": 43,
-          "choice": "Coleoptera",
-          "createdOn": "2022-06-28T17:52:22.145Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.145Z"
-        }
-        ,
-        {
-
-          "id": 150,
-
-          "relatedTo": 43,
-          "choice": "Formicidae",
-          "createdOn": "2022-06-28T17:52:22.147Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.147Z"
-        }
-        ,
-        {
-
-          "id": 151,
-
-          "relatedTo": 43,
-          "choice": "Rhopalocera",
-          "createdOn": "2022-06-28T17:52:22.150Z",
-          "lastModifiedOn": "2022-06-28T17:52:22.150Z"
-        }
-
-      ]
-    },
-  ]
-
+  const [questions, setQuestions] = useState(null)
+  const location = useLocation()
+  const [quizId, setQuizId] = useState(location.state.quiz_id)
   const [responses, setResponses] = useState([])
+  const [review, setReview] = useState([])
+
+  const toggleQuickViewRef = useRef()
+
+  useEffect(() => {
+    console.log('useEffect in Question.js')
+    // setQuestions(()=> duplicate)
+    getQuestions()
+
+  }, [])
+
+  const getQuestions = async () => {
+    const res = await fetch(``)
+    const data = await res.json()
+    // console.log("Data: ", data)
+    setQuestions(() => data)
+  }
 
   /*
    response = [
@@ -399,6 +36,14 @@ export default function Question() {
    ]
   */
 
+  /* 
+  review = [] // stores question which are marked for review
+  */
+
+  const toggleQuickView = () => {
+    toggleQuickViewRef.current.click()
+  }
+
   const handleNext = () => {
     setQnum((prevQnum) => prevQnum + 1)
   }
@@ -407,7 +52,34 @@ export default function Question() {
     setQnum((prevQnum) => prevQnum - 1)
   }
 
-  const questionElements = duplicate.map((question, index) => {
+  // console.log("Question: ", responses)
+  const checkSelected = (id) => {
+    const found = responses.some(res => res.questionId === id)
+    // console.log("CheckSelected: ", found)
+    return found
+  }
+
+  const checkMarkedForReview = (id) => {
+    const found = review.some(questionId => questionId === id)
+    // console.log("CheckSelected: ", found)
+    return found
+  }
+
+  const markForReview = (id) => {
+    // console.log("Question.js > markForReview: ", id)
+    const found = checkMarkedForReview(id)
+    if (!found) {
+      setReview((prevArray) => {
+        return [...prevArray, id]
+      })
+    } else {
+      const newItems = review.filter((questionId) => questionId !== id)
+      setReview(() => newItems)
+    }
+    // console.log(review)
+  }
+
+  const questionElements = questions?.map((question, index) => {
     return (
       <QuestionItem
         key={index}
@@ -422,19 +94,43 @@ export default function Question() {
         options={question.options}
         responses={responses}
         setResponses={setResponses}
+        checkMarkedForReview={checkMarkedForReview}
+        markForReview={markForReview}
+        toggleQuickView={toggleQuickView}
       />
     )
   })
 
-  // console.log("Question: ", responses)
-  const buttons = duplicate.map((item, index) => (
-    <button key={index} className="question-btn" onClick={() => { setQnum((prev) => index) }}>{index + 1}</button>
+
+
+
+
+  // If question id in responses array then button color should be changed
+
+  const buttons = questions?.map((question, index) => (
+    <button
+      key={question.id}
+      className={
+        `
+        question-btn 
+        ${(checkSelected(question.id) && !checkMarkedForReview(question.id)) ? "active-btn-selected" : null}
+        ${checkMarkedForReview(question.id) ? "active-btn-review" : null}
+        `
+      }
+      onClick={() => {
+        setQnum(() => index)
+      }}
+    >{index + 1}</button>
   ))
 
   return (
     <div className="quiz-page">
       <div className="questions">
-        {questionElements[qnum]}
+        <QuickViewModal questionElements={questionElements} />
+        <button type="button" ref={toggleQuickViewRef} className="btn btn-primary" data-toggle="modal" data-target="#quickViewModal" hidden>
+          Launch demo modal
+        </button>
+        {questionElements ? questionElements[qnum] : null}
       </div>
 
       <div className="card question-btns" style={{ width: "18rem" }}>
@@ -445,9 +141,12 @@ export default function Question() {
           <li className="list-group-item">
             <div className="next-prev">
               <button className="btn-all btn-question previous" onClick={handlePrevious} disabled={qnum === 0 ? true : false}>Previous</button>
-              <button className="btn-all btn-question next" onClick={handleNext} disabled={qnum === duplicate.length - 1 ? true : false}>Next</button>
+              <button className="btn-all btn-question next" onClick={handleNext} disabled={qnum === questions?.length - 1 ? true : false}>Next</button>
             </div>
-            <button className="btn-end btn-all btn-end">End Test</button>
+            <div className="end-review">
+              <button className="review btn-all btn-quick-view" onClick={toggleQuickView}><span><i className="fa fa-eye"></i></span> Quick View</button>
+              <button className="btn-end btn-all btn-end">End Test</button>
+            </div>
           </li>
         </ul>
       </div>
