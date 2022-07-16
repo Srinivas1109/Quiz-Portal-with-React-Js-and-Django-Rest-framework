@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, Link } from 'react-router-dom'
-import TextEditor from './TextEditor'
+import TextEditor from '../Components/TextEditor'
 import "../styles/createQuiz.css"
 import GenerateOption from './GenerateOption'
 import parse from 'html-react-parser'

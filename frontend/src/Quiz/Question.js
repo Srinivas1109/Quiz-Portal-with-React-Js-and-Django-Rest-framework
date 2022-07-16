@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react"
-import QuestionItem from "../Components/QuestionItem"
+import React, { useEffect, useState, useRef, useContext } from "react"
+import QuestionItem from "./QuestionItem"
 import { useLocation } from 'react-router-dom'
 import QuickViewModal from "./QuickViewModal"
+import AuthContext from "../Context/AuthContext"
 
 export default function Question() {
   const [qnum, setQnum] = useState(0)
@@ -10,14 +11,20 @@ export default function Question() {
   const [quizId, setQuizId] = useState(location.state.quiz_id)
   const [responses, setResponses] = useState([])
   const [review, setReview] = useState([])
+  // const [timer, setTimer] = useState({
+  //   'hour': 0,
+  //   'minute': 0,
+  //   'second': 0,
+  // })
+  const [loading, setLoading] = useState(true)
 
   const toggleQuickViewRef = useRef()
 
   useEffect(() => {
-    console.log('useEffect in Question.js')
-    // setQuestions(()=> duplicate)
     getQuestions()
-
+    fetchUserResponses()
+    setQnum(() => 0)
+    setLoading(() => false)
   }, [])
 
   const getQuestions = async () => {
@@ -27,6 +34,24 @@ export default function Question() {
     setQuestions(() => data)
   }
 
+  const { user } = useContext(AuthContext)
+
+  const fetchUserResponses = async () => {
+    const res = await fetch(
+      `http://127.0.0.1:8000/api/quizzes/user/responses/`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quiz: quizId,
+          user: user.user_id,
+        })
+      }
+    )
+    const data = await res.json()
+    // console.log("Questions.js > fetchUserResponses", data)
+    setResponses(data.data)
+  }
   /*
    response = [
     {
@@ -46,13 +71,14 @@ export default function Question() {
 
   const handleNext = () => {
     setQnum((prevQnum) => prevQnum + 1)
+    // postUserTime()
   }
 
   const handlePrevious = () => {
     setQnum((prevQnum) => prevQnum - 1)
+    // postUserTime()
   }
 
-  // console.log("Question: ", responses)
   const checkSelected = (id) => {
     const found = responses.some(res => res.questionId === id)
     // console.log("CheckSelected: ", found)
@@ -97,13 +123,12 @@ export default function Question() {
         checkMarkedForReview={checkMarkedForReview}
         markForReview={markForReview}
         toggleQuickView={toggleQuickView}
+        // timer={timer}
+        // setTimer={setTimer}
+        qunum={qnum}
       />
     )
   })
-
-
-
-
 
   // If question id in responses array then button color should be changed
 

@@ -1,7 +1,7 @@
 import './styles/App.css';
-import Home from './Components/Home';
-import Question from './Components/Question';
-import Quiz from './Components/Quiz';
+import Home from './Pages/Home';
+import Question from './Quiz/Question';
+import Quiz from './Quiz/Quiz';
 import "./styles/quiz.css"
 import React from 'react';
 import {
@@ -10,17 +10,17 @@ import {
   Route,
 } from "react-router-dom"
 import NavBar from './Components/NavBar';
-import Login from './Components/Login';
-import SignUp from './Components/SignUp';
-import PrivateRoute from './Components/PrivateRoute';
+import Login from './Pages/Login';
+import SignUp from './Pages/SignUp';
+import PrivateRoute from './Private/PrivateRoute';
 import { AuthProvider } from './Context/AuthContext';
-import UserProfile from './Components/UserProfile';
-import Contact from './Components/Contact';
-import About from './Components/About';
-import Staff from './Components/Staff';
-import StaffPrivateRoute from './Components/StaffPrivateRoute';
-import CreateQuiz from './Components/CreateQuiz';
-import EditQuiz from './Components/EditQuiz';
+import UserProfile from './Pages/UserProfile';
+import Contact from './Pages/Contact';
+import About from './Pages/About';
+import Staff from './Create/Staff';
+import StaffPrivateRoute from './Private/StaffPrivateRoute';
+import CreateQuiz from './Create/CreateQuiz';
+import EditQuiz from './Edit/EditQuiz';
 
 
 

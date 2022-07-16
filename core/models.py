@@ -74,26 +74,26 @@ class Profile(models.Model):
         return f'{self.user.username} profile'
 
 # Stores the time taken by the user for each question
-# class Timer(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-#     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-#     hour = models.IntegerField(default=0)
-#     minute = models.IntegerField(default=0)
-#     second = models.IntegerField(default=0)
+class Timer(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    hour = models.IntegerField(default=0)
+    minute = models.IntegerField(default=0)
+    second = models.IntegerField(default=0)
 
-#     def __str__(self):
-#         return f'{self.hour} Hr: {self.minute} MM: {self.second} SS'
+    def __str__(self):
+        return f'{self.hour} Hr: {self.minute} MM: {self.second} SS'
 
 # Relates the user and test
-# class Test(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
-#     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-#     option = models.ForeignKey(Choice, on_delete=models.CASCADE)
+class Test(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    quiz = models.ForeignKey(Quiz, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    option = models.ForeignKey(Choice, on_delete=models.CASCADE)
 
-#     def __str__(self):
-#         return f'{self.option}'
+    def __str__(self):
+        return f'{self.option}'
 
 # class Textarea(models.Model):
 #     user = models.ForeignKey(User, on_delete= models.CASCADE)

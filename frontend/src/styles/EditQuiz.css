@@ -1,0 +1,43 @@
+p {
+    display: inline;
+}
+
+.edit-form {
+    /* background-color: rgb(192, 192, 235); */
+    border-bottom: 2px solid gray;
+    margin: 20px;
+}
+
+.edit-question-input, .edit-choice-input {
+    width: 100%;
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 10px 0px;
+}
+
+.edit-form-btns{
+    display: flex;
+    column-gap: 20px;
+    justify-content: flex-end;
+}
+
+.edit-form-btns button{
+    border: none;
+    padding: 8px 16px;
+    margin: 8px 2px;
+}
+
+.edit-from-submit-btn{
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background-color: rgb(10, 175, 76);
+}
+
+.edit-from-delete-btn{
+    font-size: 18px;
+    font-weight: 600;
+    color: white;
+    background-color: rgb(237, 67, 19);
+}

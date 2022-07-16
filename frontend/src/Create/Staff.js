@@ -1,8 +1,7 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
 import "../styles/staff.css"
 import CreateQuizModal from './CreateQuizModal'
-import EditQuizModal from './EditQuizModal'
+import EditQuizModal from '../Edit/EditQuizModal'
 
 const Staff = () => {
     return (

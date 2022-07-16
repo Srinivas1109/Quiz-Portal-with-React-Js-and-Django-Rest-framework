@@ -15,28 +15,54 @@ export const AuthProvider = ({ children }) => {
 
     const loginUser = async (e) => {
         e.preventDefault()
+        try {
+            const res = await fetch("http://127.0.0.1:8000/api/token/",
+                {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(
+                        {
+                            "username": e.target.username.value,
+                            "password": e.target.password.value
+                        }
+                    )
+                })
+            const data = await res.json()
+            if (res.status === 200) {
+                setAuthTokens(data)
+                setUser(jwt_decode(data?.access))
+                localStorage.setItem("authTokens", JSON.stringify(data))
+                navigateTo("/quizzes")
 
-        const res = await fetch("http://127.0.0.1:8000/api/token/",
-            {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(
-                    {
-                        "username": e.target.username.value,
-                        "password": e.target.password.value
-                    }
-                )
-            })
-        const data = await res.json()
-        if (res.status === 200) {
-            setAuthTokens(data)
-            setUser(jwt_decode(data?.access))
-            localStorage.setItem("authTokens", JSON.stringify(data))
-            navigateTo("/quizzes")
+            } else {
+                alert("Something went wrong")
+            }
 
-        } else {
-            alert("Something went wrong")
+        } catch (error) {
+            console.log("Login Error: ", error)
         }
+
+        // const res = await fetch("http://127.0.0.1:8000/api/token/",
+        //     {
+        //         method: "POST",
+        //         headers: { 'Content-Type': 'application/json' },
+        //         body: JSON.stringify(
+        //             {
+        //                 "username": e.target.username.value,
+        //                 "password": e.target.password.value
+        //             }
+        //         )
+        //     })
+        // const data = await res.json()
+        // if (res.status === 200) {
+        //     setAuthTokens(data)
+        //     setUser(jwt_decode(data?.access))
+        //     localStorage.setItem("authTokens", JSON.stringify(data))
+        //     navigateTo("/quizzes")
+
+        // } else {
+        //     alert("Something went wrong")
+        // }
     }
 
     const logoutUser = () => {
@@ -54,30 +80,35 @@ export const AuthProvider = ({ children }) => {
     }
 
     const updateToken = async () => {
-        const res = await fetch("http://127.0.0.1:8000/api/token/refresh/",
-            {
-                method: "POST",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(
-                    {
-                        "refresh": authTokens?.refresh
-                    }
-                )
-            })
-        const data = await res.json()
-        // console.log("updated Token: ", data)
+        try {
+            const res = await fetch("http://127.0.0.1:8000/api/token/refresh/",
+                {
+                    method: "POST",
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(
+                        {
+                            "refresh": authTokens?.refresh
+                        }
+                    )
+                })
+            const data = await res.json()
+            // console.log("updated Token: ", data)
 
-        if (res.status === 200) {
-            setAuthTokens(data)
-            setUser(jwt_decode(data?.access))
-            localStorage.setItem("authTokens", JSON.stringify(data))
-        } else {
-            logoutUser()
+            if (res.status === 200) {
+                setAuthTokens(data)
+                setUser(jwt_decode(data?.access))
+                localStorage.setItem("authTokens", JSON.stringify(data))
+            } else {
+                logoutUser()
+            }
+
+            if (loading) {
+                setLoading(false)
+            }
+        } catch (error) {
+            console.log("UpdateToken Error: ", error)
         }
 
-        if (loading) {
-            setLoading(false)
-        }
     }
 
     useEffect(() => {
