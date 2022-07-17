@@ -1,36 +1,31 @@
 import React, { useEffect, useState, useRef, useContext } from "react"
 import QuestionItem from "./QuestionItem"
-import { useLocation, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import QuickViewModal from "./QuickViewModal"
 import AuthContext from "../Context/AuthContext"
 
 export default function Question() {
-  const [qnum, setQnum] = useState(0)
+  const [qnum, setQnum] = useState(-1)
   const [questions, setQuestions] = useState(null)
-  // const location = useLocation()
-  // const [quizId, setQuizId] = useState(location.state.quiz_id)
+
   const params = useParams()
   const quizId = params.id
   const [responses, setResponses] = useState([])
+  const [userTime, setUserTime] = useState([])
   const [review, setReview] = useState([])
-  const [timer, setTimer] = useState({
-    'hour': 0,
-    'minute': 0,
-    'second': 0,
-  })
 
-  
   const [loading, setLoading] = useState(true)
 
   const toggleQuickViewRef = useRef()
 
-  // const postUserTimeRef = useRef()
 
   useEffect(() => {
     getQuestions()
     fetchUserResponses()
+    fetchUserTime()
     setQnum(() => 0)
     setLoading(() => false)
+    // console.log("Init done")
   }, [])
 
   const getQuestions = async () => {
@@ -71,22 +66,25 @@ export default function Question() {
   review = [] // stores question which are marked for review
   */
 
+  const fetchUserTime = async () => {
+    const res = await fetch(
+      `http://127.0.0.1:8000/api/quizzes/user/timer/`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quiz: quizId,
+          user: user.user_id,
+        })
+      }
+    )
+    const data = await res.json()
+    setUserTime(data.data)
+    // console.log("Time->", data.data)
+  }
+
   const toggleQuickView = () => {
     toggleQuickViewRef.current.click()
-  }
-
-  const handleNext = () => {
-    // console.log(`Questions.js > Next-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
-    // postUserTimeRef.current.postUserTime()
-    setQnum((prevQnum) => prevQnum + 1)
-    // postUserTime()
-  }
-
-  const handlePrevious = () => {
-    // console.log(`Questions.js > Previous-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
-    // postUserTimeRef.current.postUserTime()
-    setQnum((prevQnum) => prevQnum - 1)
-    // postUserTime()
   }
 
   const checkSelected = (id) => {
@@ -94,6 +92,7 @@ export default function Question() {
     // console.log("CheckSelected: ", found)
     return found
   }
+
 
   const checkMarkedForReview = (id) => {
     const found = review.some(questionId => questionId === id)
@@ -115,6 +114,108 @@ export default function Question() {
     // console.log(review)
   }
 
+  function findTimerIndex(array, id, param) {
+    const index = array.findIndex(ele => ele[param] === id)
+    return index
+  }
+
+  const postUserTime = async () => {
+    // console.log("------------------------------------------------------------------")
+    // console.log("Post User Time:")
+    // console.log("Question Id: ", questions[qnum]?.id)
+    // console.log("QUiz Id: ", quizId)
+    // console.log("Time: ", userTime[findTimerIndex(userTime, questions[qnum]?.id, "questionId")]?.time)
+    // console.log("------------------------------------------------------------------")
+
+    const res = await fetch(
+      "http://127.0.0.1:8000/api/quizzes/user/timer-post/",
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quiz: quizId,
+          user: user.user_id,
+          question: questions[qnum]?.id,
+          time: userTime[findTimerIndex(userTime, questions[qnum]?.id, "questionId")]?.time
+        })
+      }
+    )
+    const data = await res.json()
+    console.log(data, data.data.time)
+
+  }
+  const handleNext = () => {
+    // console.log(`Questions.js > Next-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
+    // postUserTimeRef.current.postUserTime()
+    postUserTime()
+    setQnum((prevQnum) => prevQnum + 1)
+    // postUserTime()
+  }
+
+  const handlePrevious = () => {
+    // console.log(`Questions.js > Previous-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
+    // postUserTimeRef.current.postUserTime()
+    postUserTime()
+    setQnum((prevQnum) => prevQnum - 1)
+    // postUserTime()
+  }
+
+  function exist(array, id, param) {
+    const found = array.some(el => el[param] === id)
+    return found
+  }
+
+  useEffect(() => {
+    // console.log("qnum changed")
+    // console.log("Qnum: ", qnum)
+    if (qnum > -1 && questions) {
+      // console.log("Entered in")
+      const id = questions[qnum].id
+      const exists = exist(userTime, id, "questionId")
+      const index = exists ? findTimerIndex(userTime, id, "questionId") : -1
+      let hh = exists ? userTime[index]?.time.hour : 0
+      let mm = exists ? userTime[index]?.time.minute : 0
+      let ss = exists ? userTime[index]?.time.second : 0
+
+      let clearTime = setInterval(() => {
+        ss++
+
+        if (ss === 59) {
+          mm++
+          ss = 0
+        }
+
+        if (mm === 59) {
+          hh++
+          mm = 0
+        }
+
+        if (!exists) {
+          setUserTime((prev) => {
+            return [...prev, { questionId: id, time: { "hour": hh, "minute": mm, "second": ss } }]
+          })
+        } else {
+          setUserTime((usertimer) => {
+            return usertimer.map(item =>
+              item.questionId === id
+                ? { ...item, time: { "hour": hh, "minute": mm, "second": ss } }
+                : item
+            )
+          })
+        }
+
+      }, 1000)
+
+
+      return () => {
+        clearInterval(clearTime);
+      };
+    }
+  }, [qnum, questions])
+
+
+
+
   const questionElements = questions?.map((question, index) => {
     return (
       <QuestionItem
@@ -133,15 +234,11 @@ export default function Question() {
         checkMarkedForReview={checkMarkedForReview}
         markForReview={markForReview}
         toggleQuickView={toggleQuickView}
-        timer={timer}
-        setTimer={setTimer}
-        qunum={qnum}
-        // ref={postUserTimeRef}
+        userTime={userTime}
+        userTimeIndex={findTimerIndex(userTime, question.id, "questionId")}
       />
     )
   })
-
-  // If question id in responses array then button color should be changed
 
   const buttons = questions?.map((question, index) => (
     <button
@@ -156,6 +253,7 @@ export default function Question() {
       onClick={() => {
         // console.log(`Questions.js > ButtonClick-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
         // postUserTimeRef.current.postUserTime()
+        postUserTime()
         setQnum(() => index)
       }}
     >{index + 1}</button>

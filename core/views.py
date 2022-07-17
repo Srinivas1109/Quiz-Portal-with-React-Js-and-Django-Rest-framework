@@ -330,28 +330,23 @@ def userQuestionTimer(req):
     data = JSONParser().parse(req)
     user_id = data['user']
     quiz_id = data['quiz']
-    question_id = data['question']
     user_exist = User.objects.filter(id= user_id).exists()
     if user_exist:
         user= User.objects.get(id= user_id)
-        # print("User: ", user)
         quiz= Quiz.objects.filter(id= quiz_id).first()
-        # print("Quiz: ", quiz)
-        question= Question.objects.filter(id= question_id).first()
-        # print("Question: ", question)
-        user_question_time = Timer.objects.filter(user= user).filter(question= question).first()
-        # print("Timer: ", user_question_time)
-        responses = {}
-        responses['hour'] = 0
-        responses['minute'] = 0
-        responses['second'] = 0
-        if user_question_time:
-            responses['hour'] = user_question_time.hour
-            responses['minute'] = user_question_time.minute
-            responses['second'] = user_question_time.second
-
-        # 'response': {'user_id':user_id, 'quiz_id':quiz_id, 'question_id':question_id}
-        return Response({'status': status.HTTP_100_CONTINUE, 'data': responses}) 
+        user_timer = Timer.objects.filter(user= user).filter(quiz= quiz) # stores data from database
+        # print(user_test_responses)
+        timer = []
+        existng_ids = []
+        for i in user_timer:
+            timer.append({'questionId': i.question.id, 'time': {"hour": i.hour, "minute": i.minute, "second": i.second}})
+            existng_ids.append(i.question.id)
+        not_in_data_base = Question.objects.filter(relatedTo= quiz)
+        for (index, item) in enumerate(not_in_data_base):
+            if(item.id not in existng_ids):
+                timer.append({'questionId': item.id, 'time': {"hour": 0, "minute": 0, "second": 0}})
+            
+        return Response({'status': status.HTTP_100_CONTINUE, 'data': timer}) 
     else:
         return Response({'status': status.HTTP_401_UNAUTHORIZED})
 
@@ -362,24 +357,32 @@ def userQuestionTimerSave(req):
     user_id = data['user']
     quiz_id = data['quiz']
     question_id = data['question']
-    # user_exist = User.objects.filter(id= user_id).exists()
-    # if user_exist:
-    #     user= User.objects.get(id= user_id)
+    user_time = data['time']
+    user_exist = User.objects.filter(id= user_id).exists()
+    if user_exist:
+        user= User.objects.get(id= user_id)
     #     # print("User: ", user)
-    #     quiz= Quiz.objects.filter(id= quiz_id).first()
+        quiz= Quiz.objects.filter(id= quiz_id).first()
     #     # print("Quiz: ", quiz)
-    #     question= Question.objects.filter(id= question_id).first()
+        question= Question.objects.filter(id= question_id).first()
     #     # print("Question: ", question)
-    #     user_question_time = Timer.objects.filter(user= user).filter(question= question).first()
-    #     # print("Timer: ", user_question_time)
-    #     responses = {}
-    #     responses['hour'] = 0
-    #     responses['minute'] = 0
-    #     responses['second'] = 0
-    #     if user_question_time:
-    #         responses['hour'] = user_question_time.hour
-    #         responses['minute'] = user_question_time.minute
-    #         responses['second'] = user_question_time.second
+        user_question_time = Timer.objects.filter(user= user).filter(question= question).first()
+        print(user_question_time)
+        if user_question_time:
+            user_question_time.hour = user_time['hour']
+            user_question_time.minute = user_time['minute']
+            user_question_time.second = user_time['second']
+            user_question_time.save()
+        else:
+            user_question_time = Timer(
+                user= user,
+                quiz= quiz,
+                question= question,
+                hour= user_time['hour'],
+                minute= user_time['minute'],
+                second= user_time['second']
+            )
+            user_question_time.save()
 
     #     # 'response': {'user_id':user_id, 'quiz_id':quiz_id, 'question_id':question_id}
     #     return Response({'status': status.HTTP_100_CONTINUE, 'data': responses}) 
