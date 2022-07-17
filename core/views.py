@@ -362,26 +362,39 @@ def userQuestionTimerSave(req):
     user_id = data['user']
     quiz_id = data['quiz']
     question_id = data['question']
-    user_exist = User.objects.filter(id= user_id).exists()
-    if user_exist:
-        user= User.objects.get(id= user_id)
-        # print("User: ", user)
-        quiz= Quiz.objects.filter(id= quiz_id).first()
-        # print("Quiz: ", quiz)
-        question= Question.objects.filter(id= question_id).first()
-        # print("Question: ", question)
-        user_question_time = Timer.objects.filter(user= user).filter(question= question).first()
-        # print("Timer: ", user_question_time)
-        responses = {}
-        responses['hour'] = 0
-        responses['minute'] = 0
-        responses['second'] = 0
-        if user_question_time:
-            responses['hour'] = user_question_time.hour
-            responses['minute'] = user_question_time.minute
-            responses['second'] = user_question_time.second
+    # user_exist = User.objects.filter(id= user_id).exists()
+    # if user_exist:
+    #     user= User.objects.get(id= user_id)
+    #     # print("User: ", user)
+    #     quiz= Quiz.objects.filter(id= quiz_id).first()
+    #     # print("Quiz: ", quiz)
+    #     question= Question.objects.filter(id= question_id).first()
+    #     # print("Question: ", question)
+    #     user_question_time = Timer.objects.filter(user= user).filter(question= question).first()
+    #     # print("Timer: ", user_question_time)
+    #     responses = {}
+    #     responses['hour'] = 0
+    #     responses['minute'] = 0
+    #     responses['second'] = 0
+    #     if user_question_time:
+    #         responses['hour'] = user_question_time.hour
+    #         responses['minute'] = user_question_time.minute
+    #         responses['second'] = user_question_time.second
 
-        # 'response': {'user_id':user_id, 'quiz_id':quiz_id, 'question_id':question_id}
-        return Response({'status': status.HTTP_100_CONTINUE, 'data': responses}) 
-    else:
-        return Response({'status': status.HTTP_401_UNAUTHORIZED})
+    #     # 'response': {'user_id':user_id, 'quiz_id':quiz_id, 'question_id':question_id}
+    #     return Response({'status': status.HTTP_100_CONTINUE, 'data': responses}) 
+    # else:
+    #     return Response({'status': status.HTTP_401_UNAUTHORIZED})
+    return Response({"data": data})
+
+@api_view(['POST'])
+def quizExist(req):
+    data = JSONParser().parse(req)
+    quizName = data['quizName']
+    quiz = Quiz.objects.filter(title= quizName).first()
+    if quiz:
+        quiz_serializer = QuizSerializer(quiz)
+        return Response({'status': status.HTTP_200_OK, 'data': quiz_serializer.data})
+    # else:
+        # quiz = Quiz(title)
+    return Response({'status': status.HTTP_404_NOT_FOUND})

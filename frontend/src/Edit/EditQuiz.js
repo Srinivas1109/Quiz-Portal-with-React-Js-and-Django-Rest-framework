@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import EditQuestionItem from './EditQuestionItem'
 import "../styles/EditQuiz.css"
 
 const EditQuiz = () => {
     const location = useLocation()
-    const [quizId, setQuizId] = useState(location.state.quiz_id)
+    // const [quizId, setQuizId] = useState(location.state.quiz_id)
+    const params = useParams()
+    const quizId = params.id
     const [data, setData] = useState({
         'quiz': null,
         'questions': null
@@ -31,7 +33,7 @@ const EditQuiz = () => {
         getQuestions()
     }, [quizId])
 
-    
+
     const getQuestions = async () => {
         try {
             const res = await fetch(`http://127.0.0.1:8000/api/quizzes/${quizId}/edit/`)
@@ -45,7 +47,7 @@ const EditQuiz = () => {
 
         console.log(data)
     }
-    
+
     const questionElements = data.questions?.map((question, index) => {
         return (
             <EditQuestionItem

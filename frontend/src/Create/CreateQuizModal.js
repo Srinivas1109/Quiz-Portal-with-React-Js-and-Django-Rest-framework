@@ -1,15 +1,21 @@
 import React, { useState, useRef } from 'react'
 import "../styles/CerateQuizModal.css"
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 const CreateQuizModal = () => {
-    const [quizName, setQuizName] = useState('')
+    const [quiz, setQuiz] = useState('')
     const [quizSchedule, setQuizSchedule] = useState(null)
     const [quizScheduleTime, setQuizScheduleTime] = useState(null)
+    const [error, setError] = useState(false)
     // const [clicked, setClicked] = useState(false)
+    const navigateTo = useNavigate()
+    const closeRef = useRef()
 
-    const handleOnChangeQuizName = (e) => {
-        setQuizName(() => e.target.value)
+    const handleOnChangeQuiz = (e) => {
+        setError(() => false)
+        setQuiz(() => {
+            return { "quizName": e.target.value }
+        })
         // console.log(quizName)
     }
     const handleOnChangeQuizSchedule = (e) => {
@@ -21,10 +27,33 @@ const CreateQuizModal = () => {
         // console.log(e.target.value)
         setQuizScheduleTime(() => quizSchedule ? e.target.value : null)
     }
-    const handleOnClick = () => {
-        // console.log(quizName)
-        closeRef.current.click()
+    const handleOnClick = async () => {
+        console.log(quiz.quizName)
+        // closeRef.current.click()
         // setClicked(true)
+
+        const res = await fetch(`http://127.0.0.1:8000/api/quizzes/exist/`,
+            {
+                method: "POST",
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    'quizName': quiz.quizName
+                })
+            })
+
+        const data = await res.json()
+        if (data.status === 404) {
+            // console.log(data.data)
+            setQuiz(data.data)
+            closeRef.current.click()
+            // navigateTo(`/create/${data.data.id}/edit`)
+            navigateTo(`/create/`, {state:{ quizName: quiz.quizName, scheduled: quizSchedule, quizScheduleTime: quizScheduleTime }})
+            // console.log(quiz)
+
+        } else {
+            if (data.status === 200 && quiz) { setError(() => true) }
+            console.error("EditModal.js > Quiz Already Exist")
+        }
     }
 
 
@@ -39,8 +68,6 @@ const CreateQuizModal = () => {
         return date_time.toString()
     }
     // console.log(typeof setDateTime())
-
-    const closeRef = useRef()
     return (
         <>
 
@@ -62,7 +89,8 @@ const CreateQuizModal = () => {
                         <div className="modal-body">
                             <div className="input-box">
                                 <span className="details">Quiz Title</span>
-                                <input type="text" name='newQuiz' placeholder="Enter Quiz Name" required onChange={handleOnChangeQuizName} />
+                                <input type="text" name='newQuiz' placeholder="Enter Quiz Name" required onChange={handleOnChangeQuiz} />
+                                <h3 className='my-1 text-danger'>{error ? `${quiz.quizName} Aready using...!` : null}</h3>
                             </div>
                             <div className="form-check schedule">
                                 <input className="form-check-input" type="checkbox" id="schedule" onChange={handleOnChangeQuizSchedule} />
@@ -84,9 +112,10 @@ const CreateQuizModal = () => {
                         </div>
                         <div className="modal-footer">
                             <button type="button" className="btn btn-danger" data-dismiss="modal">Cancel</button>
-                            <Link to="/create" state={{ quizName: quizName, scheduled: quizSchedule, quizScheduleTime: quizScheduleTime }}>
+                            {/* <Link to="/create" state={{ quizName: quizName, scheduled: quizSchedule, quizScheduleTime: quizScheduleTime }}>
                                 <button type="button" className="btn btn-success" onClick={handleOnClick}>Create</button>
-                            </Link>
+                            </Link> */}
+                            <button type="button" className="btn btn-success" onClick={handleOnClick}>Create</button>
                         </div>
                     </div>
                 </div>

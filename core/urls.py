@@ -17,6 +17,7 @@ urlpatterns = [
     path('quizzes/<int:id>/edit/', views.quizEdit, name='edit-quiz'),
     path('staff/help/', views.quizHelper, name='helper'),
     path('quizzes/test/', views.userTest, name='user-test'),
+    path('quizzes/exist/', views.quizExist, name='quiz-exist'),
     path('quizzes/user/responses/', views.userResponses, name='user-responses'),
     path('quizzes/user/timer/', views.userQuestionTimer, name='user-question-timer'),
     path('quizzes/user/timer-post/', views.userQuestionTimerSave, name='user-question-timer-post'),

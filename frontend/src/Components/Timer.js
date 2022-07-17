@@ -34,17 +34,19 @@ const Timer = (props) => {
         };
     });
 
-    // useEffect(()=>{
-    //     console.log("Timer.js > postUserTime")
-    //     console.log(`QuizId: ${props.quizId} QuestionId: ${props.questionId} Timer: ${hours} : ${minutes} : ${seconds}`)
-    // }, [props.qnum])
+    // return(
+    //     <>
+    //         <span>{hours < 10 ? `0${hours}` : hours} : {minutes < 10 ? `0${minutes}` : minutes} : {seconds < 10 ? `0${seconds}` : seconds}</span>
+    //     </>
+    // )
 
-    return(
-        <>
-            <span>{hours < 10 ? `0${hours}` : hours} : {minutes < 10 ? `0${minutes}` : minutes} : {seconds < 10 ? `0${seconds}` : seconds}</span>
-        </>
-    )
-    
+    return {
+
+        "hour": hours,
+        "minute": minutes,
+        "second": seconds
+    }
+
 }
 
 export default Timer;

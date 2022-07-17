@@ -1,24 +1,30 @@
 import React, { useEffect, useState, useRef, useContext } from "react"
 import QuestionItem from "./QuestionItem"
-import { useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import QuickViewModal from "./QuickViewModal"
 import AuthContext from "../Context/AuthContext"
 
 export default function Question() {
   const [qnum, setQnum] = useState(0)
   const [questions, setQuestions] = useState(null)
-  const location = useLocation()
-  const [quizId, setQuizId] = useState(location.state.quiz_id)
+  // const location = useLocation()
+  // const [quizId, setQuizId] = useState(location.state.quiz_id)
+  const params = useParams()
+  const quizId = params.id
   const [responses, setResponses] = useState([])
   const [review, setReview] = useState([])
-  // const [timer, setTimer] = useState({
-  //   'hour': 0,
-  //   'minute': 0,
-  //   'second': 0,
-  // })
+  const [timer, setTimer] = useState({
+    'hour': 0,
+    'minute': 0,
+    'second': 0,
+  })
+
+  
   const [loading, setLoading] = useState(true)
 
   const toggleQuickViewRef = useRef()
+
+  // const postUserTimeRef = useRef()
 
   useEffect(() => {
     getQuestions()
@@ -70,11 +76,15 @@ export default function Question() {
   }
 
   const handleNext = () => {
+    // console.log(`Questions.js > Next-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
+    // postUserTimeRef.current.postUserTime()
     setQnum((prevQnum) => prevQnum + 1)
     // postUserTime()
   }
 
   const handlePrevious = () => {
+    // console.log(`Questions.js > Previous-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
+    // postUserTimeRef.current.postUserTime()
     setQnum((prevQnum) => prevQnum - 1)
     // postUserTime()
   }
@@ -123,9 +133,10 @@ export default function Question() {
         checkMarkedForReview={checkMarkedForReview}
         markForReview={markForReview}
         toggleQuickView={toggleQuickView}
-        // timer={timer}
-        // setTimer={setTimer}
+        timer={timer}
+        setTimer={setTimer}
         qunum={qnum}
+        // ref={postUserTimeRef}
       />
     )
   })
@@ -143,6 +154,8 @@ export default function Question() {
         `
       }
       onClick={() => {
+        // console.log(`Questions.js > ButtonClick-> questionId: ${questions[qnum].id} quizId: ${quizId} Timer: ${timer.hour} : ${timer.minute}: ${timer.second}`)
+        // postUserTimeRef.current.postUserTime()
         setQnum(() => index)
       }}
     >{index + 1}</button>
