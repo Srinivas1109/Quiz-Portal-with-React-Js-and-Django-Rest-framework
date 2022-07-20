@@ -15,13 +15,12 @@ const GenerateOption = (props) => {
 
       {props.optionType === "multiCorrect" ? (
         <div className="form-check my-2">
-          <input className="form-check-input " type="checkbox" name={`option${props.index}`} id={`checkbox${props.index}`} value={props.index}/>
+          <input className="form-check-input " type="checkbox" name={`option${props.index}`} id={`checkbox${props.index}`} value={props.index} />
           <label className="form-check-label choice" htmlFor={`checkbox${props.index}`} >
-            <input className="input-box" type="text" placeholder={`Enter option ${props.index}`} name={`choice${props.index}`}/>
+            <input className="input-box" type="text" placeholder={`Enter option ${props.index}`} name={`choice${props.index}`} />
           </label>
         </div>
       ) : null}
-
 
     </div>
   )

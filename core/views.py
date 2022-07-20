@@ -247,28 +247,54 @@ def quizEdit(req, id):
         quiz_serializer = QuizSerializer(quiz)
         questions = quiz.question_set.all()
         # print(questions)
-        questions_Serializer = QuestionSerializer(questions, many= True)
+        questions_Serializer = QuestionSerializer(questions, many=True)
         data = {}
         data['quiz'] = quiz_serializer.data
         data['questions'] = questions_Serializer.data
-        for index , question in enumerate(questions_Serializer.data):
-            choices = Choice.objects.filter(relatedTo= question["id"])
+        for question in questions_Serializer.data:
+
+            choices = Choice.objects.filter(relatedTo=question["id"])
             choice_serializer = ChoiceSerializer(choices, many=True)
             data["question"] = question
+            relatedQuestion = Question.objects.get(id=question["id"])
+            selectedChoice = relatedQuestion.correctchoice_set.all()
+            data['question']['selectedChoice'] = {'selected': selectedChoice.first().correctChoice.id, 'id': selectedChoice.first().id}
             data['question']['choices'] = choice_serializer.data
 
         return Response(data)
 
     elif req.method == 'PUT':
-        serializer = QuizSerializer(quiz, data=req.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        data = JSONParser().parse(req)
+        quiz_id = data['quizId']
+        question_id = data['questionId']
+        edited_select_choice = data['selectedChoice']
+        edited_choices = data['choices']
+        edited_marks = data['marks']
+        edited_question = data['question']
+        selected_choice_id = data['selectedChoiceId']
+
+        question_obj = Question.objects.get(id= question_id)
+        question_obj.question = edited_question
+        question_obj.marks = edited_marks
+        question_obj.save()
+
+        for option in edited_choices:
+            choice = Choice.objects.get(id= option['optionId'])
+            choice.choice = option['choice']
+            choice.save()
+        
+        selected_choice = CorrectChoice.objects.get(id= selected_choice_id)
+        selected_choice.correctChoice = Choice.objects.get(id= edited_select_choice)
+        selected_choice.save()
+        return Response({"data": data, "status" : status.HTTP_100_CONTINUE})
 
     elif req.method == 'DELETE':
-        Quiz.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        data = JSONParser().parse(req)
+        question_id_delete = data['questionId']
+        # question_delete = Question.objects.get(id= question_id_delete)
+        # question_delete.delete()
+        # return Response({"data": status.HTTP_204_NO_CONTENT, "deleted_id": 40})
+        return Response({"data": status.HTTP_204_NO_CONTENT, "deleted_id": question_id_delete})
     return Response("Question Edit")
 
 
@@ -281,17 +307,19 @@ def userTest(req):
     user_id = data['user']
     option_id = data['option']
 
-    user_exist = User.objects.filter(id= user_id).exists()
+    user_exist = User.objects.filter(id=user_id).exists()
     if user_exist:
-        user= User.objects.get(id= user_id)
-        quiz_exist = Quiz.objects.filter(id= quiz_id).exists()
+        user = User.objects.get(id=user_id)
+        quiz_exist = Quiz.objects.filter(id=quiz_id).exists()
         if quiz_exist:
-            quiz = Quiz.objects.get(id= quiz_id)
-            question = Question.objects.filter(id= question_id).first()
-            test = Test.objects.filter(user= user).filter(quiz= quiz).filter(question= question).first()
-            option= Choice.objects.filter(id= option_id).first()
+            quiz = Quiz.objects.get(id=quiz_id)
+            question = Question.objects.filter(id=question_id).first()
+            test = Test.objects.filter(user=user).filter(
+                quiz=quiz).filter(question=question).first()
+            option = Choice.objects.filter(id=option_id).first()
             if(not test):
-                test = Test(user= user, quiz= quiz, question= question, option= option)
+                test = Test(user=user, quiz=quiz,
+                            question=question, option=option)
                 test.save()
                 return Response({'status': status.HTTP_200_OK})
                 # print(test)
@@ -305,52 +333,59 @@ def userTest(req):
     else:
         return Response({'status': status.HTTP_401_UNAUTHORIZED})
 
-@api_view(['POST']) 
+
+@api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def userResponses(req):
     data = JSONParser().parse(req)
     user_id = data['user']
     quiz_id = data['quiz']
-    user_exist = User.objects.filter(id= user_id).exists()
+    user_exist = User.objects.filter(id=user_id).exists()
     if user_exist:
-        user= User.objects.get(id= user_id)
-        quiz= Quiz.objects.filter(id= quiz_id).first()
-        user_test_responses = Test.objects.filter(user= user).filter(quiz= quiz)
+        user = User.objects.get(id=user_id)
+        quiz = Quiz.objects.filter(id=quiz_id).first()
+        user_test_responses = Test.objects.filter(user=user).filter(quiz=quiz)
         # print(user_test_responses)
         responses = []
         for i in user_test_responses:
-            responses.append({'questionId': i.question.id, 'optionSelected': i.option.id})
-        return Response({'status': status.HTTP_100_CONTINUE, 'data': responses}) 
+            responses.append({'questionId': i.question.id,
+                             'optionSelected': i.option.id})
+        return Response({'status': status.HTTP_100_CONTINUE, 'data': responses})
     else:
         return Response({'status': status.HTTP_401_UNAUTHORIZED})
 
-@api_view(['POST']) 
+
+@api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def userQuestionTimer(req):
     data = JSONParser().parse(req)
     user_id = data['user']
     quiz_id = data['quiz']
-    user_exist = User.objects.filter(id= user_id).exists()
+    user_exist = User.objects.filter(id=user_id).exists()
     if user_exist:
-        user= User.objects.get(id= user_id)
-        quiz= Quiz.objects.filter(id= quiz_id).first()
-        user_timer = Timer.objects.filter(user= user).filter(quiz= quiz) # stores data from database
+        user = User.objects.get(id=user_id)
+        quiz = Quiz.objects.filter(id=quiz_id).first()
+        user_timer = Timer.objects.filter(user=user).filter(
+            quiz=quiz)  # stores data from database
         # print(user_test_responses)
         timer = []
         existng_ids = []
         for i in user_timer:
-            timer.append({'questionId': i.question.id, 'time': {"hour": i.hour, "minute": i.minute, "second": i.second}})
+            timer.append({'questionId': i.question.id, 'time': {
+                         "hour": i.hour, "minute": i.minute, "second": i.second}})
             existng_ids.append(i.question.id)
-        not_in_data_base = Question.objects.filter(relatedTo= quiz)
+        not_in_data_base = Question.objects.filter(relatedTo=quiz)
         for (index, item) in enumerate(not_in_data_base):
             if(item.id not in existng_ids):
-                timer.append({'questionId': item.id, 'time': {"hour": 0, "minute": 0, "second": 0}})
-            
-        return Response({'status': status.HTTP_100_CONTINUE, 'data': timer}) 
+                timer.append({'questionId': item.id, 'time': {
+                             "hour": 0, "minute": 0, "second": 0}})
+
+        return Response({'status': status.HTTP_100_CONTINUE, 'data': timer})
     else:
         return Response({'status': status.HTTP_401_UNAUTHORIZED})
 
-@api_view(['POST']) 
+
+@api_view(['POST'])
 # @permission_classes([IsAuthenticated])
 def userQuestionTimerSave(req):
     data = JSONParser().parse(req)
@@ -358,15 +393,16 @@ def userQuestionTimerSave(req):
     quiz_id = data['quiz']
     question_id = data['question']
     user_time = data['time']
-    user_exist = User.objects.filter(id= user_id).exists()
+    user_exist = User.objects.filter(id=user_id).exists()
     if user_exist:
-        user= User.objects.get(id= user_id)
+        user = User.objects.get(id=user_id)
     #     # print("User: ", user)
-        quiz= Quiz.objects.filter(id= quiz_id).first()
+        quiz = Quiz.objects.filter(id=quiz_id).first()
     #     # print("Quiz: ", quiz)
-        question= Question.objects.filter(id= question_id).first()
+        question = Question.objects.filter(id=question_id).first()
     #     # print("Question: ", question)
-        user_question_time = Timer.objects.filter(user= user).filter(question= question).first()
+        user_question_time = Timer.objects.filter(
+            user=user).filter(question=question).first()
         print(user_question_time)
         if user_question_time:
             user_question_time.hour = user_time['hour']
@@ -375,26 +411,27 @@ def userQuestionTimerSave(req):
             user_question_time.save()
         else:
             user_question_time = Timer(
-                user= user,
-                quiz= quiz,
-                question= question,
-                hour= user_time['hour'],
-                minute= user_time['minute'],
-                second= user_time['second']
+                user=user,
+                quiz=quiz,
+                question=question,
+                hour=user_time['hour'],
+                minute=user_time['minute'],
+                second=user_time['second']
             )
             user_question_time.save()
 
     #     # 'response': {'user_id':user_id, 'quiz_id':quiz_id, 'question_id':question_id}
-    #     return Response({'status': status.HTTP_100_CONTINUE, 'data': responses}) 
+    #     return Response({'status': status.HTTP_100_CONTINUE, 'data': responses})
     # else:
     #     return Response({'status': status.HTTP_401_UNAUTHORIZED})
     return Response({"data": data})
+
 
 @api_view(['POST'])
 def quizExist(req):
     data = JSONParser().parse(req)
     quizName = data['quizName']
-    quiz = Quiz.objects.filter(title= quizName).first()
+    quiz = Quiz.objects.filter(title=quizName).first()
     if quiz:
         quiz_serializer = QuizSerializer(quiz)
         return Response({'status': status.HTTP_200_OK, 'data': quiz_serializer.data})

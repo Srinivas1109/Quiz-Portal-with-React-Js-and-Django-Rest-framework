@@ -18,3 +18,9 @@
 .active-option{
     background-color: #19c1df;
 }
+
+.user-selected-badge{
+    position: absolute;
+    top: 26%;
+    right: 2%;
+}

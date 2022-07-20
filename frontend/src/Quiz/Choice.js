@@ -43,6 +43,11 @@ export default function Choice(props) {
     }
 
     return (
-        <li className={`list-group-item option ${exist(props.responses, props.id, "optionSelected") ? "active-option" : ""}`} onClick={handleClick}>{props.choice}</li>
+        <div>
+            <li className={`list-group-item option ${exist(props.responses, props.id, "optionSelected") ? "active-option" : ""}`} onClick={handleClick}>
+                {props.choice}
+                {exist(props.responses, props.id, "optionSelected") && <span className="badge badge-success user-selected-badge">selected</span>}
+            </li>
+        </div>
     )
 }

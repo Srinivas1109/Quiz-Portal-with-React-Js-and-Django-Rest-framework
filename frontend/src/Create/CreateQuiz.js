@@ -282,7 +282,7 @@ const CreateQuiz = () => {
                                     </div>
                                 </Link>
                             ))}
-                            <div><Link className="btn btn-info " to="/preview-all"> Preview All</Link></div>
+                            <div><Link className="btn btn-info " to={`/quizzes/${quizId}/edit`}> Edit</Link></div>
 
                         </div>
 

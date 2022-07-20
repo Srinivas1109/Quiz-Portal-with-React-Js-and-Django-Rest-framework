@@ -1,6 +1,6 @@
 from dataclasses import fields
 from rest_framework.serializers import ModelSerializer
-from .models import Quiz, Question, Choice, Profile
+from .models import Quiz, Question, Choice, Profile, CorrectChoice
 from django.contrib.auth.models import User
 
 class QuizSerializer(ModelSerializer):

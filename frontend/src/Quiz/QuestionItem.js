@@ -48,7 +48,7 @@ const QuestionItem = (props) => {
                 </div>
                 <div className="card-header question">
                     {/* <span style={{ color: "hwb(188 9% 10%)" }}>Q{props.questionNum}. </span><p dangerouslySetInnerHTML={{ __html: props.question }} /> */}
-                    <span style={{ color: "hwb(188 9% 10%)" }}>Q{props.questionNum}. ID:{props.id} {parse(props.question)}</span>
+                    <span style={{ color: "hwb(188 9% 10%)" }}>Q{props.questionNum}. {parse(props.question)}</span>
                 </div>
                 <ul className="list-group list-group-flush">
                     {options}
