@@ -1,7 +1,7 @@
 from asyncio.windows_events import NULL
 from .models import Question, Quiz, Choice, CorrectChoice, Profile, ScheduleTime, Test, Timer
 from django.contrib.auth.models import User
-from .serializers import ProfileSerializer, QuizSerializer, QuestionSerializer, ChoiceSerializer
+from .serializers import CorrectChoiceSerializer, ProfileSerializer, QuizSerializer, QuestionSerializer, ChoiceSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -162,7 +162,7 @@ def upload(req):
         question.save()
         # print("Question: ", question)
         # print()
-
+        # print(data)
         if not question.isTextBox:
             for i in range(0, int(data['number_of_options'])):
                 choice = Choice(
@@ -184,7 +184,7 @@ def upload(req):
                     # print()
                 else:
                     for j in range(0, int(len(data['correctIndices']))):
-                        if int(data['correctIndicies'][j]) == i:
+                        if int(data['correctIndices'][j]) == i:
                             answer = CorrectChoice(
                                 question=question,
                                 correctChoice=choice
@@ -258,7 +258,11 @@ def quizEdit(req, id):
             data["question"] = question
             relatedQuestion = Question.objects.get(id=question["id"])
             selectedChoice = relatedQuestion.correctchoice_set.all()
-            data['question']['selectedChoice'] = {'selected': selectedChoice.first().correctChoice.id, 'id': selectedChoice.first().id}
+            # selectedChoice = CorrectChoice.objects.filter(question= relatedQuestion)
+            selected_choice_serializer = CorrectChoiceSerializer(selectedChoice, many= True)
+            # print(selected_choice_serializer.data)
+            data['question']['selectedChoice'] = selected_choice_serializer.data
+            # data['question']['selectedChoice'] = {'selected': selectedChoice.first().correctChoice.id, 'id': selectedChoice.first().id}
             data['question']['choices'] = choice_serializer.data
 
         return Response(data)
@@ -271,7 +275,6 @@ def quizEdit(req, id):
         edited_choices = data['choices']
         edited_marks = data['marks']
         edited_question = data['question']
-        selected_choice_id = data['selectedChoiceId']
 
         question_obj = Question.objects.get(id= question_id)
         question_obj.question = edited_question
@@ -283,18 +286,41 @@ def quizEdit(req, id):
             choice.choice = option['choice']
             choice.save()
         
-        selected_choice = CorrectChoice.objects.get(id= selected_choice_id)
-        selected_choice.correctChoice = Choice.objects.get(id= edited_select_choice)
-        selected_choice.save()
+        # selected_choice = CorrectChoice.objects.get(id= selected_choice_id)
+        # selected_choice.correctChoice = Choice.objects.get(id= edited_select_choice)
+        # selected_choice.save()
+        for selectedChoice in edited_select_choice:
+            if selectedChoice['id']:
+                selected_choice = CorrectChoice.objects.get(id= selectedChoice['id'])
+                selected_choice.correctChoice = Choice.objects.get(id= selectedChoice['correctChoice'])
+                selected_choice.save()
+            else:
+                selected_choice = CorrectChoice(
+                    question= question_obj,
+                    correctChoice= Choice.objects.get(id= selectedChoice['correctChoice'])
+                    )
+                selected_choice.save()
+            # print(selectedChoice)
+
         return Response({"data": data, "status" : status.HTTP_100_CONTINUE})
 
     elif req.method == 'DELETE':
         data = JSONParser().parse(req)
-        question_id_delete = data['questionId']
-        # question_delete = Question.objects.get(id= question_id_delete)
-        # question_delete.delete()
-        # return Response({"data": status.HTTP_204_NO_CONTENT, "deleted_id": 40})
-        return Response({"data": status.HTTP_204_NO_CONTENT, "deleted_id": question_id_delete})
+        
+        
+        if "questionId" in data:
+            # print("QuestionId")
+            question_id_delete = data['questionId']
+            question_delete = Question.objects.get(id= question_id_delete)
+            # question_delete.delete()
+            return Response({"data": status.HTTP_204_NO_CONTENT, "deleted_id": question_id_delete})
+        else:
+            # print("Delete Choice Id")
+            correct_choice_delete_id = data['delete_Choice_id']
+            correct_choice_delete = Choice.objects.get(id=correct_choice_delete_id)
+            delete_choice = CorrectChoice.objects.get(correctChoice= correct_choice_delete)
+            delete_choice.delete()
+            return Response({"data": status.HTTP_204_NO_CONTENT, "deleted_choice_id": correct_choice_delete_id})
     return Response("Question Edit")
 
 

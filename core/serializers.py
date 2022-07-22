@@ -19,6 +19,11 @@ class ChoiceSerializer(ModelSerializer):
         model = Choice
         fields = '__all__'
 
+class CorrectChoiceSerializer(ModelSerializer):
+    class Meta:
+        model = CorrectChoice
+        fields = '__all__'
+
 class UserSerializer(ModelSerializer):
     class Meta:
         model = User

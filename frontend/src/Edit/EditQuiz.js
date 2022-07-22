@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import "../styles/EditQuiz.css"
+import parse from 'html-react-parser'
 import EditModal from './EditModal'
 import NoDataFound from "../styles/Images/noDataFound.jpg"
 
@@ -10,6 +11,11 @@ const EditQuiz = () => {
     const params = useParams()
     const quizId = params.id
     const navigateTo = useNavigate()
+
+    const [errors, setErrors] = useState({
+        error: false,
+        errorText: ''
+    })
 
     const [popUp, setPopUp] = useState({ bool: false, question: '' })
 
@@ -74,9 +80,10 @@ const EditQuiz = () => {
         'questionId': '',
         'question': '',
         'choices': [], //this should be an array
-        'selectedChoice': '',
-        'selectedChoiceId': '',
-        'marks': ''
+        'selectedChoice': [],//this should be an array
+        'marks': '',
+        "isRadio": true,
+        "isTextBox": false,
     })
 
     useEffect(() => {
@@ -84,6 +91,7 @@ const EditQuiz = () => {
     }, [popUp])
 
     const updateQuestion = (question) => {
+
         setPopUp({
             bool: true,
         })
@@ -96,66 +104,68 @@ const EditQuiz = () => {
                     optionId: choice.id,
                     choice: choice.choice,
                 }
-            }), //this should be an array
-            'selectedChoice': question.selectedChoice.selected,
-            'selectedChoiceId': question.selectedChoice.id,
+            }),
+            'selectedChoice': question.selectedChoice,
             'marks': question.marks,
+            'isRadio': question.isRadio,
+            'isTextBox': question.isTextBox
         })
         // console.log("EditQuiz.js: ", question)
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        editModalRef.current.click()
-        const res = await fetch(
-            `http://127.0.0.1:8000/api/quizzes/${quizId}/edit/`,
-            {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(question)
+        if (question.selectedChoice.length !== 0) {
+            editModalRef.current.click()
+            const res = await fetch(
+                `http://127.0.0.1:8000/api/quizzes/${quizId}/edit/`,
+                {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(question)
+                }
+
+            )
+
+            const edited_data = await res.json()
+            // console.log("edited_data: ", edited_data)
+            if (edited_data.status === 100) {
+
+                let oldQuestion = data.questions.find(question => question.id === edited_data.data.questionId)
+                // Modify old question
+                // console.log("oldQuestion: ", oldQuestion)
+                oldQuestion.id = edited_data.data.questionId
+                oldQuestion.question = edited_data.data.question
+                oldQuestion.marks = edited_data.data.marks
+                oldQuestion.selectedChoice = edited_data.data.selectedChoice
+                let oldChoices = oldQuestion.choices
+                for (let i = 0; i < oldChoices.length; i++) {
+                    const index = oldChoices.findIndex(choice => {
+                        return choice.id === edited_data.data.choices[i].optionId
+                    })
+                    oldChoices[index].choice = edited_data.data.choices[i].choice
+                }
             }
+        } else {
+            setErrors(() => {
+                return {
+                    error: true,
+                    errorText: "Atleast one choice must be selected...!"
+                }
+            })
 
-        )
-
-        const edited_data = await res.json()
-        // console.log("edited_data: ", edited_data)
-        if (edited_data.status === 100) {
-
-            let oldQuestion = data.questions.find(question => question.id === edited_data.data.questionId)
-            // Modify old question
-            // console.log("oldQuestion: ", oldQuestion)
-            oldQuestion.id = edited_data.data.questionId
-            oldQuestion.question = edited_data.data.question
-            oldQuestion.marks = edited_data.data.marks
-            oldQuestion.selectedChoice.selected = edited_data.data.selectedChoice
-            let oldChoices = oldQuestion.choices
-            for (let i = 0; i < oldChoices.length; i++) {
-                const index = oldChoices.findIndex(choice => {
-                    return choice.id === edited_data.data.choices[i].optionId
-                })
-                oldChoices[index].choice = edited_data.data.choices[i].choice
-            }
-
-            // console.log("newQuestion: ", oldQuestion)
         }
 
-
-        // setData((prev) => {
-        //     return { ...prev,
-
-        //     }
-        // })
-        // console.log("Edited Question: ", data)
     }
 
     const handleAddClick = () => {
-        navigateTo("/create", {state: {'quizName': data.quiz.title}})
+        navigateTo("/create", { state: { 'quizName': data.quiz.title } })
     }
 
     const questionElements = data.questions?.map((question, index) => (
         <div key={question.id} className="question-link">
             <div className="question-text">
-                {index + 1}. {question.question}
+                {index + 1}. {parse(question.question)}
             </div>
             <div className="edit-delete-buttons">
                 <button className='edit-btn' onClick={() => {
@@ -177,13 +187,16 @@ const EditQuiz = () => {
 
             </div>
             {(questionElements && questionElements.length > 0) ? questionElements : <img className="edit-empty-img" src={NoDataFound} alt="No data found" />}
-
             {popUp.bool &&
+
                 <EditModal
+                    quizId={data.quiz.id}
                     quizTitle={data.quiz.title}
                     handleSubmit={handleSubmit}
                     question={question}
                     setQuestion={setQuestion}
+                    errors={errors}
+                    setErrors={setErrors}
                 />
 
             }
