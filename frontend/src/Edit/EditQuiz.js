@@ -165,7 +165,9 @@ const EditQuiz = () => {
     const questionElements = data.questions?.map((question, index) => (
         <div key={question.id} className="question-link">
             <div className="question-text">
-                {index + 1}. {parse(question.question)}
+                {/* {index + 1}. {parse(question.question)} */}
+                {/* {index + 1}. <div dangerouslySetInnerHTML={ {__html: question.question}}/> */}
+                <div dangerouslySetInnerHTML={ {__html: `${index + 1}. ${question.question}`}}/>
             </div>
             <div className="edit-delete-buttons">
                 <button className='edit-btn' onClick={() => {

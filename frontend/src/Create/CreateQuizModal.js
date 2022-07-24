@@ -28,7 +28,7 @@ const CreateQuizModal = () => {
         setQuizScheduleTime(() => quizSchedule ? e.target.value : null)
     }
     const handleOnClick = async () => {
-        console.log(quiz.quizName)
+        // console.log(quiz.quizName)
         // closeRef.current.click()
         // setClicked(true)
 

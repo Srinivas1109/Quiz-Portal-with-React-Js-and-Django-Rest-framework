@@ -1,11 +1,16 @@
 from dataclasses import fields
 from rest_framework.serializers import ModelSerializer
-from .models import Quiz, Question, Choice, Profile, CorrectChoice
+from .models import Quiz, Question, Choice, Profile, CorrectChoice, ScheduleTime
 from django.contrib.auth.models import User
 
 class QuizSerializer(ModelSerializer):
     class Meta:
         model = Quiz
+        fields = '__all__'
+
+class ScheduleTimeSerializer(ModelSerializer):
+    class Meta:
+        model = ScheduleTime
         fields = '__all__'
 
 

@@ -1,7 +1,7 @@
 {
   "name": "frontend",
-  "proxy": "http://127.0.0.1:8000/api",
   "version": "0.1.0",
+  "proxy": "http://127.0.0.1:8000/api/",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.4",
@@ -15,6 +15,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.3.0",
     "react-scripts": "5.0.1",
+    "react-spinners": "^0.13.3",
+    "react-web-share": "^1.1.6",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

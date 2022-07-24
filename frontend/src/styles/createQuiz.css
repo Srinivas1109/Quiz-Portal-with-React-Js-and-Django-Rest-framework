@@ -1,15 +1,15 @@
-.create-quiz{
+.create-quiz {
     /* width: 70%; */
     padding: 10px;
     box-shadow: 10px 5px 5px #cdd3d7;
 }
 
-.question-title{
+.question-title {
     padding: 10px;
     font-size: 18px;
 }
 
-.quiz-name{
+.quiz-name {
     font-size: 24px;
     font-family: monospace;
     width: 100%;
@@ -19,29 +19,51 @@
     /* margin-bottom: 8px; */
 }
 
-.created-questions{
+.created-questions {
     /* border: 2px solid red; */
     padding: 10px;
     box-shadow: 10px 5px 5px #cdd3d7;
-    height: 400px;
-    height:100vh;
-    overflow-y:scroll;
+    /* height: 400px; */
+    height: 100vh;
+    /* height:fit-content; */
+    overflow-y: scroll;
     /* width: 28%; */
 }
 
-.created-questions div a{
+.created-questions::-webkit-scrollbar {
+    width: 10px;
+}
+
+.created-questions::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 5px;
+}
+
+.created-questions::-webkit-scrollbar-track {
+    background: #d2d0d0; 
+    border-radius: 5px;
+  }
+
+.created-questions div a {
     text-decoration: none;
     width: 100%;
 }
-.created-questions div a:hover{
+
+.created-questions div a:hover {
     text-decoration: none;
 }
 
-.question{
-    border-radius: 6px 25px 6px;
+.question {
+    border-radius: 5px;
+    border: 1px solid gray;
+    box-shadow: 0 0 2px gray;
+    padding: 8px 4px;
+    margin: 8px 0;
+    font-weight: 600;
+    font-family: 'Courier New', Courier, monospace;
 }
 
-.question div{
+.question div {
     margin-top: 5px;
     margin-bottom: 5px;
 }
@@ -68,23 +90,38 @@ span.label {
     font-weight: 600;
 }
 
-.options{
+.options {
     font-family: 'Roboto Mono', monospace;
     font-weight: 600;
 }
 
-.explanation{
+.explanation {
     margin-top: 8px;
 }
 
-.upload{
+.upload {
     margin-top: 16px;
     width: 100%;
     color: white;
     font-weight: 700;
 }
 
-.upload:hover{
+.upload:hover {
     color: white;
 }
 
+.upload:active {
+    color: white;
+}
+
+.editor-spinner-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.selection {
+    display: flex;
+    justify-content: space-around;
+    /* margin: 0 13px; */
+}

@@ -4,11 +4,12 @@ p {
 
 .questions-link-container {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     flex-direction: column;
     align-items: center;
     height: 93vh;
     overflow-y: scroll;
+    margin: 4vh;
     /* border: 2px solid red; */
 }
 

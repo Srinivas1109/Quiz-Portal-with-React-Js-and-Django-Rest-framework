@@ -20,12 +20,13 @@ export default function Quiz() {
     const quizElements = quizzes.map((quiz, index) => {
         return (
             <QuizItem
-                id={quiz.id}
+                id={quiz.quiz.id}
                 index={index + 1}
-                title={quiz.title}
-                date={quiz.createdOn}
-                description={`Some description of the quiz ${quiz.title}`}
+                title={quiz.quiz.title}
+                date={quiz.quiz.createdOn}
+                description={`Some description of the quiz ${quiz.quiz.title}`}
                 key={index}
+                noOfQuestions={quiz.no_of_question}
             />
         )
     })

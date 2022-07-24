@@ -16,6 +16,9 @@ const QuestionItem = (props) => {
                 responses={props.responses}
                 setResponses={props.setResponses}
                 quiz={props.relatedTo}
+                isRadio={props.isRadio}
+                isTextBox={props.isTextBox}
+                onChange={props.onChangeTextAnswer}
             />
         )
     })

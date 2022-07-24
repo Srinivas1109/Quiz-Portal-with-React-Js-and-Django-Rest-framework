@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+main {
+    height: 100vh;
+    width: 100vw;
+    background-color: #0f0d0d;
+    display: flex;
+    flex-direction: row;
+    /*   min-width: 70vw; */
+    /*   margin: auto auto; */
+    flex-wrap: wrap;
+    overflow-y: scroll;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+/* Card Styling */
+:root {
+    --basic-padding: 1.5vh;
+    --title-color: #232F34;
+    --title-font-weight: 700;
+    --title-font-size: 3vh;
+    --secondary-text-font-size: 2vh;
+}
+
+.quiz-card-container {
+    margin: var(--basic-padding);
+    width: 30vw;
+    height: 25vh;
+    color: gray;
+    /*   border: 2px solid gray; */
+    border-radius: 1vh;
+    box-shadow: 0 0 5px gray;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+.quiz-card-header {
+    padding: var(--basic-padding);
+    display: flex;
+}
+
+.quiz-card-icons {
+    display: flex;
+    justify-content: flex-end;
+    padding: var(--basic-padding);
+}
+
+.quiz-card-icon {
+    padding: 0 var(--basic-padding);
+}
+
+.quiz-favourite-icon,
+.quiz-share-icon {
+    cursor: pointer;
+    height: 1vh;
+    width: 1vw;
+    /*   border: 2px solid red; */
+}
+
+.material-icons {
+    width: inherit;
+    height: inherit;
+}
+
+.quiz-header-title {
+    color: var(--title-color);
+    font-weight: var(--title-font-weight);
+    font-size: var(--title-font-size);
+    padding: 0 var(--basic-padding);
+}
+
+.quiz-header-secondary-text {
+    padding: 0 var(--basic-padding);
+    font-size: var(--secondary-text-font-size);
+}
+
+.quiz-card-thumbnail {
+    width: 4vw;
+    height: 6vh;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    font-size: 2vw;
+    font-weight: 700;
+    color: #fff;
+    align-items: center;
+}
+
+/* .quiz-card-media-img {
+    width: 22vw;
+    height: 20vh;
+    display: flex;
+    justify-content: center;
+    font-size: 3vw;
+    font-weight: 700;
+    color: #fff;
+    align-items: center;
+    background-repeat: no-repeat;
+    background-size: 22vw 20vh;
+
+} */
+
+.quiz-card-supporting-text {
+    padding: 1vh var(--basic-padding);
+    font-size: var(--secondary-text-font-size);
+}
+
+.quiz-card-container:hover {
+    background-color: gray;
+    cursor: pointer;
+    /* height: 23vh; */
+    transform: scale(1.1);
+    transition: 1s;
+}

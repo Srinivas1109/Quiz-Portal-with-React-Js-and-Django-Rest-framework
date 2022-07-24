@@ -1,7 +1,6 @@
-from asyncio.windows_events import NULL
 from .models import Question, Quiz, Choice, CorrectChoice, Profile, ScheduleTime, Test, Timer
 from django.contrib.auth.models import User
-from .serializers import CorrectChoiceSerializer, ProfileSerializer, QuizSerializer, QuestionSerializer, ChoiceSerializer
+from .serializers import CorrectChoiceSerializer, ProfileSerializer, QuizSerializer, QuestionSerializer, ChoiceSerializer, ScheduleTimeSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
@@ -53,10 +52,25 @@ class MyTokenObtainPairView(TokenObtainPairView):
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated])
 def quiz(req):
+    quizzes = []
     all_quizzes = Quiz.objects.all()
-    serializer = QuizSerializer(all_quizzes, many=True)
+    for quiz in all_quizzes:
+        add_quiz = {}
+        quiz_serializer = QuizSerializer(quiz)
+        add_quiz['quiz'] = quiz_serializer.data
+        quiz_schedule = quiz.scheduletime_set.all()
+        quiz_schedule_serializer = None
+        if len(quiz_schedule) != 0:
+            quiz_schedule_serializer = ScheduleTimeSerializer(quiz_schedule[0])
+            add_quiz['schedule'] = quiz_schedule_serializer.data
+        quizzes.append(add_quiz)
 
-    return Response(serializer.data)
+        add_quiz['no_of_question'] = len(quiz.question_set.all())
+        # print(quiz.scheduletime_set.all())
+    # serializer = QuizSerializer(all_quizzes, many=True)
+
+    # return Response(serializer.data)
+    return Response(quizzes)
 
 # Returns all the questions based on the quiz selected
 
@@ -128,7 +142,7 @@ def upload(req):
         data = JSONParser().parse(req)
         quiz_exist = Quiz.objects.filter(title=data['quiz_name']).exists()
         # print(quiz_exist)
-        print("data['quiz_scheduled']: ", data['quiz_scheduled'])
+        # print("data['quiz_scheduled']: ", data['quiz_scheduled'])
         # print(data['quiz_name'])
         quiz = None
         if(not quiz_exist):
@@ -312,7 +326,7 @@ def quizEdit(req, id):
             # print("QuestionId")
             question_id_delete = data['questionId']
             question_delete = Question.objects.get(id= question_id_delete)
-            # question_delete.delete()
+            question_delete.delete()
             return Response({"data": status.HTTP_204_NO_CONTENT, "deleted_id": question_id_delete})
         else:
             # print("Delete Choice Id")

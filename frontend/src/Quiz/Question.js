@@ -13,7 +13,8 @@ export default function Question() {
   const [responses, setResponses] = useState([])
   const [userTime, setUserTime] = useState([])
   const [review, setReview] = useState([])
-
+  const [userTextAnswer, setUserTextAnswer] = useState([])
+  // console.log("userAnswer: ", userTextAnswer)
   const [loading, setLoading] = useState(true)
 
   const toggleQuickViewRef = useRef()
@@ -29,9 +30,9 @@ export default function Question() {
   }, [])
 
   const getQuestions = async () => {
-    const res = await fetch(``)
+    const res = await fetch(`http://127.0.0.1:8000/api/quizzes/${quizId}/questions/`)
     const data = await res.json()
-    // console.log("Data: ", data)
+    console.log("Data: ", data)
     setQuestions(() => data)
   }
 
@@ -92,7 +93,6 @@ export default function Question() {
     // console.log("CheckSelected: ", found)
     return found
   }
-
 
   const checkMarkedForReview = (id) => {
     const found = review.some(questionId => questionId === id)
@@ -236,10 +236,11 @@ export default function Question() {
         toggleQuickView={toggleQuickView}
         userTime={userTime}
         userTimeIndex={findTimerIndex(userTime, question.id, "questionId")}
+        onChangeTextAnswer={setUserTextAnswer}
       />
     )
   })
-
+  // console.log("UserText:", userTextAnswer)
   const buttons = questions?.map((question, index) => (
     <button
       key={question.id}
@@ -260,32 +261,37 @@ export default function Question() {
   ))
 
   return (
-    <div className="quiz-page">
-      <div className="questions">
-        <QuickViewModal questionElements={questionElements} />
-        <button type="button" ref={toggleQuickViewRef} className="btn btn-primary" data-toggle="modal" data-target="#quickViewModal" hidden>
-          Launch demo modal
-        </button>
-        {questionElements ? questionElements[qnum] : null}
+    <>
+
+      <div className="quiz-page">
+        <div className="questions">
+          <QuickViewModal questionElements={questionElements} />
+          <button type="button" ref={toggleQuickViewRef} className="btn btn-primary" data-toggle="modal" data-target="#quickViewModal" hidden>
+            Launch demo modal
+          </button>
+          {questionElements ? questionElements[qnum] : null}
+        </div>
+
+        <div className="card question-btns" style={{ width: "18rem" }}>
+          <div className="card-header">
+            {buttons}
+          </div>
+          <ul className="list-group list-group-flush">
+            <li className="list-group-item">
+              <div className="next-prev">
+                <button className="btn-all btn-question previous" onClick={handlePrevious} disabled={qnum === 0 ? true : false}>Previous</button>
+                <button className="btn-all btn-question next" onClick={handleNext} disabled={qnum === questions?.length - 1 ? true : false}>Next</button>
+              </div>
+              <div className="end-review">
+                <button className="review btn-all btn-quick-view" onClick={toggleQuickView}><span><i className="fa fa-eye"></i></span> Quick View</button>
+                <button className="btn-end btn-all btn-end">End Test</button>
+              </div>
+            </li>
+          </ul>
+        </div>
       </div>
 
-      <div className="card question-btns" style={{ width: "18rem" }}>
-        <div className="card-header">
-          {buttons}
-        </div>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">
-            <div className="next-prev">
-              <button className="btn-all btn-question previous" onClick={handlePrevious} disabled={qnum === 0 ? true : false}>Previous</button>
-              <button className="btn-all btn-question next" onClick={handleNext} disabled={qnum === questions?.length - 1 ? true : false}>Next</button>
-            </div>
-            <div className="end-review">
-              <button className="review btn-all btn-quick-view" onClick={toggleQuickView}><span><i className="fa fa-eye"></i></span> Quick View</button>
-              <button className="btn-end btn-all btn-end">End Test</button>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
+    </>
+
   )
 }

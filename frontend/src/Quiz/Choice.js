@@ -1,6 +1,7 @@
 import React, { useContext } from "react"
 import AuthContext from "../Context/AuthContext"
 import "../styles/choice.css"
+import TextEditor from "../Components/TextEditor"
 
 export default function Choice(props) {
     const { user } = useContext(AuthContext)
@@ -44,10 +45,17 @@ export default function Choice(props) {
 
     return (
         <div>
-            <li className={`list-group-item option ${exist(props.responses, props.id, "optionSelected") ? "active-option" : ""}`} onClick={handleClick}>
-                {props.choice}
-                {exist(props.responses, props.id, "optionSelected") && <span className="badge badge-success user-selected-badge">selected</span>}
-            </li>
+            {
+                props.isTextBox === true ?
+                    <TextEditor param={"userTextAnswer"} onChange={props.onChange} relatedTo={props.relatedTo}/>
+                    :
+                    <div>
+                        <li className={`list-group-item option ${exist(props.responses, props.id, "optionSelected") ? "active-option" : ""}`} onClick={handleClick}>
+                            {props.choice}
+                            {exist(props.responses, props.id, "optionSelected") && <span className="badge badge-success user-selected-badge">selected</span>}
+                        </li>
+                    </div>
+            }
         </div>
     )
 }

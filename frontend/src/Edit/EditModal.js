@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 
 const EditModal = (props) => {
     // console.log(props.question)
@@ -83,7 +83,7 @@ const EditModal = (props) => {
 
             }
 
-            if(props.question.selectedChoice.length != 1){
+            if(props.question.selectedChoice.length !== 1){
                 const res = fetch(
                     `http://127.0.0.1:8000/api/quizzes/${props.quizId}/edit/`,
                     {
